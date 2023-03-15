@@ -11,7 +11,7 @@
  * synchronize access to the shared buffers.
  *
  * Example usage:
- * 1. Compile the program with gcc -o line_processor line_processor.c -lpthread.
+ * 1. Compile the program with gcc --std=gnu99 -o line_processor line_processor.c -lpthread.
  * 2. Run the program with ./line_processor.
  * 3. Provide input to the program, and it will print the processed output.
 */
