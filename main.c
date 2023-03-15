@@ -62,42 +62,63 @@ void replaceSubstring(char* str, char* remove, char replace) {
 }
 
 void* getInput(void* args) {
-	char input[LINE_SIZE];
-	for (int i = 0; i < MAX_LINES; i++) {
-		fgets(input, LINE_SIZE, stdin);
-		
-		if (strcmp(input, "STOP\n") == 0)
-			break;
-		
-		putBuff(&buffers[0], input);
-		printf("1:%s\n", buffers[0].buff[buffers[0].prod_idx - 1]);
+	char line[LINE_SIZE];
+	while (strcmp(line, "STOP\n") != 0) {
+		fgets(line, LINE_SIZE, stdin);
+		putBuff(&buffers[0], line);
 	}
 	return NULL;
 }
 
 void* remLineSep(void* args) {
-	char input[LINE_SIZE];
-	for (int i = 0; i < MAX_LINES; i++) {
-		getBuff(&buffers[0], input);
-
-		replaceSubstring(input, "\n", ' ');
-		putBuff(&buffers[1], input);
-		printf("2:%s\n", buffers[1].buff[buffers[1].prod_idx - 1]);
+	char line[LINE_SIZE];
+	while (strcmp(line, "STOP ") != 0) {
+		getBuff(&buffers[0], line);
+		replaceSubstring(line, "\n", ' ');
+		putBuff(&buffers[1], line);
 	}
 	return NULL;
 }
 
 void* remPlusPlus(void* args) {
-	char input[LINE_SIZE];
-	for (int i = 0; i < MAX_LINES; i++) {
-		getBuff(&buffers[1], input);
-
-		replaceSubstring(input, "++", '^');
-		putBuff(&buffers[2], input);
-		printf("3:%s\n", buffers[2].buff[buffers[2].prod_idx - 1]);
+	char line[LINE_SIZE];
+	while (strcmp(line, "STOP ") != 0) {
+		getBuff(&buffers[1], line);
+		replaceSubstring(line, "++", '^');
+		putBuff(&buffers[2], line);
 	}
 	return NULL;
 }
+
+void* writeOutput(void* args) {
+	char input[LINE_SIZE];
+	while (strcmp(input, "STOP ") != 0) {
+		getBuff(&buffers[2], input);
+		static char outputBuffer[LINE_SIZE * MAX_LINES] = {0};
+
+		strcat(outputBuffer, input);
+
+		while (strlen(outputBuffer) >= 80) {
+			char line[81];
+			strncpy(line, outputBuffer, 80);
+			line[80] = '\0';
+			printf("%s\n", line);
+
+			memmove(outputBuffer, outputBuffer + 80, strlen(outputBuffer + 80) + 1);
+		}
+	}
+	return NULL;
+}
+
+//void* processThread(char* stopStr) {
+//	char input[LINE_SIZE];
+//	while (strcmp(input, stopStr) != 0) {
+//		getBuff(&buffers[1], input);
+//		replaceSubstring(input, "++", '^');
+//		putBuff(&buffers[2], input);
+//	}
+//	return NULL;
+//}
 
 int main(int argc, const char * argv[]) {
 	initBuffs();
@@ -107,19 +128,13 @@ int main(int argc, const char * argv[]) {
 	pthread_create(&input, NULL, getInput, NULL);
 	pthread_create(&line_sep, NULL, remLineSep, NULL);
 	pthread_create(&plus_sign, NULL, remPlusPlus, NULL);
-//	pthread_create(&output, NULL, write_output, NULL);
+	pthread_create(&output, NULL, writeOutput, NULL);
+	
 	// Wait for the threads to terminate
 	pthread_join(input, NULL);
 	pthread_join(line_sep, NULL);
 	pthread_join(plus_sign, NULL);
-//	pthread_join(output, NULL);
-	
-	
-//	char str[1001] = "+++This ++is +a\nmulti-line\nstring.\n";
-//	replaceSubstring(str, "\n", ' ');
-//	printf("%s\n", str);
-//	replaceSubstring(str, "++", '^');
-//	printf("%s\n", str);
+	pthread_join(output, NULL);
 
 	cleanupBuffs();
 	return 0;
