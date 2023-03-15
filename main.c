@@ -1,6 +1,5 @@
 /**
- * @file line_processor.c
- *
+ * @file main.c
  * @author Nils Streedain (https://github.com/nilsstreedain)
  * @brief A multi-threaded text processing application that reads input, removes specified substrings, and formats output.
  *
@@ -11,7 +10,7 @@
  * synchronize access to the shared buffers.
  *
  * Example usage:
- * 1. Compile the program with gcc --std=gnu99 -o line_processor line_processor.c -lpthread.
+ * 1. Compile the program with gcc --std=gnu99 -o line_processor main.c -lpthread.
  * 2. Run the program with ./line_processor.
  * 3. Provide input to the program, and it will print the processed output.
 */

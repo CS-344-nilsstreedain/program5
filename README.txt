@@ -7,6 +7,6 @@ Write a program that creates 4 threads to process input from standard input as f
 - Thread 4, called the Output Thread, write this processed data to standard output as lines of exactly 80 characters.
 
 Example usage:
-1. Compile the program with gcc --std=gnu99 -o line_processor line_processor.c -lpthread.
+1. Compile the program with gcc --std=gnu99 -o line_processor main.c -lpthread.
 2. Run the program with ./line_processor.
 3. Provide input to the program, and it will print the processed output.
